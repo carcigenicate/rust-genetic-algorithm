@@ -150,15 +150,15 @@ impl<G: Clone> Environment<G> {
 
     pub fn advance_while(&mut self, continue_predicate: fn(u64, &Environment<G>) -> bool) {
         for generation in 0u64.. {
+            if !(continue_predicate)(generation, &self) {
+                break;
+            }
+
             if let Some(tweak_mutator) = self.tweak_mutator.as_mut() {
                 tweak_mutator(&mut self.tweaks);
             }
 
             self.advance_generation();
-
-            if !(continue_predicate)(generation, &self) {
-                break;
-            }
         }
 
         self.evaluate_population();
